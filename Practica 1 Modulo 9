@@ -1,0 +1,15 @@
+Modulo 9 Practica 1 WEBMIN
+
+sudo nano /etc/hosts
+sudo apt update
+sudo apt install curl -y
+curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
+sudo sh setup-repos.sh
+sudo apt install webmin --install-recommends -y
+sudo systemctl daemon-reload
+sudo systemctl start webmin
+sudo systemctl status webmin
+URL de acceso:
+https://192.x.x.x:10000 (tuip)
+
+
