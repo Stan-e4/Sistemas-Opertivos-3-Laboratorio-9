@@ -1,0 +1,54 @@
+Practica 5 Modulo 9 Playbooks
+(Para windows)
+nano instalar_notepad.yml
+---
+- name: Instalacion de Notepad++ en Windows
+  hosts: win
+  become: yes
+  become_method: runas
+  become_user: System
+
+  tasks:
+    - name: Crear carpeta temporal si no existe
+      win_file:
+        path: C:\temp
+        state: directory
+
+    - name: Descargar instalador de Chocolatey
+      win_get_url:
+        url: https://community.chocolatey.org/install.ps1
+        dest: C:\temp\install_choco.ps1
+      
+    - name: Ejecutar instalador de Chocolatey
+      win_command: powershell.exe -ExecutionPolicy Bypass -File C:\temp\install_choco.ps1
+      args:
+        creates: C:\ProgramData\chocolatey\bin\choco.exe
+
+    - name: Instalar Notepad++ usando Chocolatey
+      win_chocolatey:
+        name: notepadplusplus
+        state: present
+control o y x
+
+(para linux)
+nano instalar_nginx.yml
+---
+- name: Configuracion de servidor Web NGINX
+  hosts: linux
+  become: yes
+  tasks:
+    - name: Instalar NGINX
+      apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+
+    - name: Asegurar que NGINX este iniciado y habilitado al arrancar
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+control o y x
+ejecuta: ansible-playbook instalar_notepad.yml
+ansible-playbook instalar_nginx.yml
+Validación: Abre Firefox en tu Windows e ingresa la IP de tu DigitalOcean (ej. http://137.184.X.X). Deberías ver la página de bienvenida de "Welcome to nginx!"
