@@ -1,0 +1,6 @@
+Practica 4 Modulo 9 Comandos Ad-Hoc 
+Ve físicamente a tu Windows, haz clic derecho en el escritorio y crea un archivo de texto llamado prueba.txt.
+
+Vuelve a tu terminal de Linux Mint y ejecuta este comando (⚠️ Cuidado: cambia la palabra TU_USUARIO por el nombre real de tu carpeta de usuario en Windows):
+ansible win -m win_copy -a "src='C:\Users\User\Desktop\prueba.txt' dest='C:\Users\User\Documents\prueba.txt' remote_src=yes"
+ansible linux -m reboot -b
