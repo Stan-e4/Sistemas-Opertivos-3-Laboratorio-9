@@ -1,0 +1,82 @@
+Practica 3 Modulo 9 Instalación de Ansible
+
+si eliminaste tu mv de digital ocean:
+cd ~/terraform-do
+terraform apply
+***************************************************************************
+# Actualizar e instalar Ansible y dependencias necesarias
+sudo apt update
+sudo apt install ansible sshpass -y
+
+# Validar la instalación
+ansible --version
+
+ssh root@TUIPDIIGO
+# Crear usuario (te pedirá inventar una contraseña, pon una simple por ahora)
+adduser ansible
+
+# Darle permisos de administrador (sudo)
+usermod -aG sudo ansible
+
+# Hacer que no le pida contraseña al usar sudo (vital para Ansible)
+echo "ansible ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansible
+
+# Salir de DigitalOcean para volver a tu Mint
+exit
+ssh-copy-id ansible@TUIPDIGIO
+**********************************
+en windows:
+# Instalar servidor SSH en Windows
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+# Iniciar el servicio y ponerlo en automático
+Start-Service sshd
+Set-Service -Name sshd -StartupType 'Automatic'
+
+# Crear el usuario ansible (la contraseña es temporal)
+net user ansible "teletubies123!" /add
+
+# Hacerlo administrador 
+net localgroup Administradores ansible /add
+ipconfig (anota la ip)
+***************************************************
+Vuelve a la terminal de tu Linux Mint y ejecuta:
+ssh-copy-id ansible@TUIPWINDOW
+Escribe "yes" y pon la contraseña teletubies123!
+
+Edita el host de mint:
+sudo nano /etc/ansible/hosts
+copia esto al final: 
+[linux]
+DO_VM ansible_host=tuipDIGIO ansible_user=ansible
+
+[win]
+Mi_Windows ansible_host=tuipwindow ansible_user=ansible ansible_shell_type=cmd 
+
+Guarda y sal (Ctrl+O, Enter, Ctrl+X).
+
+La Prueba Final (Ping)
+desde mint: ansible linux -m ping
+desde win: ansible win -m win_ping
+*****************************************************************
+solucion si falla el win_ping
+# 1. Crear la carpeta de llaves del sistema si no existe
+mkdir C:\ProgramData\ssh\ -Force
+
+# 2. Mover la llave al archivo especial para administradores
+New-Item -ItemType File -Path "C:\ProgramData\ssh\administrators_authorized_keys" -Force
+En tu Linux Mint, ejecuta: cat ~/.ssh/id_rsa.pub (o id_ed25519.pub).
+
+Copia todo ese texto que empieza por ssh-rsa... o similar.
+
+Vuelve a la terminal de Windows y escribe: notepad C:\ProgramData\ssh\administrators_authorized_keys.
+
+Se abrirá el Bloc de notas. Pega la llave ahí, guarda los cambios y cierra el Bloc de notas
+
+# 3. Quitarle los permisos a todo el mundo (Windows odia las llaves "públicas")
+icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:r
+darle los permisos a:
+icacls C:\ProgramData\ssh\administrators_authorized_keys /grant "Administradores:F"
+icacls C:\ProgramData\ssh\administrators_authorized_keys /grant "SYSTEM:F"
+
+Restart-Service sshd (y ya deberia dejarte)
