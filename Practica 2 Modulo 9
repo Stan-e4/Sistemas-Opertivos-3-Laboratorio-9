@@ -87,3 +87,5 @@ terraform plan (para ver qué se va a crear).
 terraform apply (para desplegar la VM)
 ssh root@157.230.13.195
 terraform destroy (desmontar el servidor de DO)
+***********************************************************************************************************
+
