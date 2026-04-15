@@ -52,3 +52,43 @@ control o y x
 ejecuta: ansible-playbook instalar_notepad.yml
 ansible-playbook instalar_nginx.yml
 Validación: Abre Firefox en tu Windows e ingresa la IP de tu DigitalOcean (ej. http://137.184.X.X). Deberías ver la página de bienvenida de "Welcome to nginx!"
+*************************************************************************************************************************************************************
+nano examen_linux.yml
+---
+- name: Playbook Examen Final Linux
+  hosts: linux
+  become: yes
+  tasks:
+    - name: 1. Actualizar repositorios (apt update)
+      apt:
+        update_cache: yes
+
+    - name: 2. Crear usuario adrian123 y agregarlo a sudoers
+      user:
+        name: adrian123
+        groups: sudo
+        append: yes
+        shell: /bin/bash
+
+    - name: 3. Instalar bashtop
+      apt:
+        name: bashtop
+        state: present
+*************************************************************************************************
+examen_windows.yml
+---
+- name: Playbook Examen Final Windows
+  hosts: win
+  tasks:
+    - name: 1. Crear usuario en Windows con privilegios
+      win_user:
+        name: adrian_win
+        password: "Teletubies123!" # Usa la que pida el profe
+        state: present
+        groups:
+          - Administradores
+
+    - name: 2. Instalar Notepad++ usando Chocolatey (o instalador directo)
+      win_chocolatey:
+        name: notepadplusplus
+        state: present
