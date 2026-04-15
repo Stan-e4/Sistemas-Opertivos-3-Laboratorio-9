@@ -88,4 +88,54 @@ terraform apply (para desplegar la VM)
 ssh root@157.230.13.195
 terraform destroy (desmontar el servidor de DO)
 ***********************************************************************************************************
+# Para agregar llaves 
+nano variables.tf
+resource "digitalocean_ssh_key" "profe_key" {
+  name       = "llave-profesor"
+  public_key = "AQUÍ_PEGAS_EL_SSH_KEY_QUE_TE_DE_EL_PROFE" 
+}
 
+#  Droplet 
+resource "digitalocean_droplet" "os3vm" {
+  image    = "ubuntu-22-04-x64"
+  name     = "examen-final" # Nombre que pide la práctica
+  region   = "nyc1"
+  size     = "s-1vcpu-1gb"
+  # Incluimos tu llave y la del profe
+  ssh_keys = [var.ssh_fingerprint, digitalocean_ssh_key.profe_key.id]
+}
+
+# Firewalls para habilitar los puertos 22, 80, 443 y 445
+resource "digitalocean_firewall" "web-firewall" {
+  name = "firewall-examen"
+  droplet_ids = [digitalocean_droplet.os3vm.id]
+
+  # Reglas (Inbound)
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "22"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "80"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "443"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "445" # Puerto para Samba/Archivos
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  # Regla de salida (Outbound) - Permitir todo
+  outbound_rule {
+    protocol                = "tcp"
+    port_range              = "1-65535"
+    destination_addresses   = ["0.0.0.0/0", "::/0"]
+  }
+}
